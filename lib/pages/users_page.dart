@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:realtime_chat_app/models/usuario.dart';
+import 'package:realtime_chat_app/services/auth_service.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -19,16 +21,23 @@ class _UserPageState extends State<UserPage> {
   ];
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final usuario = authService.usuario;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Pantalla usuarios",
+          usuario?.name ?? '',
           style: TextStyle(color: Colors.black87),
         ),
         elevation: 1,
         backgroundColor: Colors.white,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () async {
+            //TODO desconectarnos el socket server
+
+            Navigator.pushReplacementNamed(context, 'login');
+            await AuthService.deleteToken();
+          },
           icon: Icon(Icons.exit_to_app, color: Colors.black87),
         ),
         actions: [

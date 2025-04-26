@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:realtime_chat_app/helpers/mostrar_alerta.dart';
+import 'package:realtime_chat_app/services/auth_service.dart';
 import 'package:realtime_chat_app/widgets/btn_blue.dart';
 import 'package:realtime_chat_app/widgets/custom_input.dart';
 import 'package:realtime_chat_app/widgets/labels.dart';
@@ -19,7 +22,7 @@ class LoginPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Logo(title: "Messenger",),
+                Logo(title: "Messenger"),
                 //
                 CustomForm(),
                 //
@@ -50,6 +53,7 @@ class _CustomFormState extends State<CustomForm> {
   final passlCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: true);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -70,7 +74,34 @@ class _CustomFormState extends State<CustomForm> {
           ),
 
           //TODO crear boton
-          BlueButton(onPressed: null),
+          BlueButton(
+            onPressed:
+                !authService.autenticando
+                    ? () async {
+                      FocusScope.of(context).unfocus();
+                      final response = await authService.login(
+                        emailCtrl.text.trim(),
+                        passlCtrl.text.trim(),
+                      );
+                      if (response) {
+                        //Connect to our socket server
+                        //Navigato to another page
+                        if (context.mounted) {
+                          Navigator.pushReplacementNamed(context, 'usuarios');  
+                        }
+                      } else {
+                        //Show alert
+                        if (context.mounted) {
+                          mostrarAlerta(
+                            context,
+                            "Login incorrecto",
+                            "Revise sus credenciales",
+                          );
+                        }
+                      }
+                    }
+                    : null,
+          ),
         ],
       ),
     );

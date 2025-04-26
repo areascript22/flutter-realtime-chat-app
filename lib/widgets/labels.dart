@@ -10,12 +10,13 @@ class Labels extends StatelessWidget {
     String subtitle = '';
     switch (route) {
       case 'login':
-        title = "No tienes cuenta?";
-        subtitle = "Crea una ahora!";
-        break;
-      case 'register':
         title = "Ya tienes una cuenta?";
         subtitle = "Inicia sesion";
+
+        break;
+      case 'register':
+        title = "No tienes cuenta?";
+        subtitle = "Crea una ahora!";
         break;
       default:
     }

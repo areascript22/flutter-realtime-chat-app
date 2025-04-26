@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:realtime_chat_app/helpers/mostrar_alerta.dart';
+import 'package:realtime_chat_app/services/auth_service.dart';
 import 'package:realtime_chat_app/widgets/btn_blue.dart';
 import 'package:realtime_chat_app/widgets/custom_input.dart';
 import 'package:realtime_chat_app/widgets/labels.dart';
@@ -51,6 +54,7 @@ class _CustomFormState extends State<CustomForm> {
   final passlCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -77,7 +81,32 @@ class _CustomFormState extends State<CustomForm> {
           ),
 
           //TODO crear boton
-          BlueButton(onPressed: null),
+          BlueButton(
+            onPressed:
+                authService.autenticando
+                    ? null
+                    : () async {
+                      final registerOk = await authService.register(
+                        nameCtrl.text.trim(),
+                        emailCtrl.text.trim(),
+                        passlCtrl.text.trim(),
+                      );
+                      if (registerOk == true) {
+                        //TODO conectar al socket server
+                        if (context.mounted) {
+                          Navigator.pushReplacementNamed(context, 'usuarios');
+                        }
+                      } else {
+                        if (context.mounted) {
+                          mostrarAlerta(
+                            context,
+                            'Registri incorrect',
+                            registerOk as String,
+                          ); 
+                        }
+                      }
+                    },
+          ),
         ],
       ),
     );
